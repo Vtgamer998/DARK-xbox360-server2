@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Stealth | Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #0f0f0f; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .navbar { background-color: #800080 !important; border-bottom: 2px solid #4b0082; }
+        .card { background-color: #1a1a1a; border: 1px solid #333; color: white; margin-bottom: 20px; }
+        .btn-primary { background-color: #800080; border: none; }
+        .btn-primary:hover { background-color: #4b0082; }
+        .status-online { color: #00ff00; }
+        .table { color: #e0e0e0; }
+        .sidebar { background-color: #111; min-height: 100vh; padding: 20px; border-right: 1px solid #333; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark shadow">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="#">🎮 DARK STEALTH SERVER</a>
+            <span class="badge bg-success">Server Online</span>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 sidebar">
+                <h5 class="mb-4">Menu</h5>
+                <ul class="nav flex-column">
+                    <li class="nav-item"><a class="nav-link text-white" href="#">🏠 Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#">🕹️ Consoles</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#">🛠️ Configurações</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#">📊 Estatísticas</a></li>
+                </ul>
+            </div>
+            
+            <div class="col-md-10 p-4">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card p-3 text-center">
+                            <h3>{{ consoles|length }}</h3>
+                            <p class="text-muted">Consoles Registrados</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card p-3 text-center">
+                            <h3 class="status-online">Ativo</h3>
+                            <p class="text-muted">Status do Servidor</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card p-3 text-center">
+                            <h3>v{{ settings.version }}</h3>
+                            <p class="text-muted">Versão do Stealth</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header bg-dark border-bottom border-secondary">
+                        <h5 class="mb-0">Consoles Conectados</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>CPU Key</th>
+                                    <th>Última Conexão</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for key, console in consoles.items() %}
+                                <tr>
+                                    <td>{{ console.name }}</td>
+                                    <td><code>{{ key[:16] }}...</code></td>
+                                    <td>{{ console.last_seen }}</td>
+                                    <td><span class="badge bg-success">{{ console.status }}</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-danger">Banir</button>
+                                        <button class="btn btn-sm btn-outline-info">Logs</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header bg-dark border-bottom border-secondary">
+                        <h5 class="mb-0">Configurações do Servidor</h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="/admin/settings" method="POST" class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Versão do Sistema</label>
+                                <input type="text" name="version" class="form-control bg-dark text-white border-secondary" value="{{ settings.version }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Status Global</label>
+                                <select name="status" class="form-select bg-dark text-white border-secondary">
+                                    <option value="online" {% if settings.status == 'online' %}selected{% endif %}>Online</option>
+                                    <option value="maintenance" {% if settings.status == 'maintenance' %}selected{% endif %}>Manutenção</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
